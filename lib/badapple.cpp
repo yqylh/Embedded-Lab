@@ -13,6 +13,7 @@ void badapple() {
 			} else if (i == '0') {
                 look <<= 1;
 			} else {
+                look >>= 1;
                 *(cpld + ((0xc0 + line) << 1)) = look;
                 look = 0;
                 line += 1;
