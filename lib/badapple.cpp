@@ -19,6 +19,35 @@ void badapple() {
 			}
 		}
 		usleep(126000);
+
+	}
+    in.close();
+}
+
+/*
+    // for (int i = 0; i <= 15; i++) {
+    //     *(cpld + ((0xc0 + i) << 1)) = 0xffff;
+    // }
+
+
+        int look = 0;
+        int line = 0;
+		for (auto & i : str) {
+			if (i == '1') {
+				look += 1;
+                look <<= 1;
+			} else if (i == '0') {
+                look <<= 1;
+			} else {
+                // std::cout << look << std::endl;
+				*(cpld + ((0xc0 + line) << 1)) = look;
+                look = 0;
+                line += 1;
+			}
+		}
+
+*/
+
 		// while (str.front() != '0' && str.front() != '1' ) str.erase(str.begin());
         // int arr[15][15];
         // int x = 0;
@@ -50,30 +79,3 @@ void badapple() {
         //     *(cpld + ((0xc0 + i) << 1)) = look;
         // }
 		// usleep(126000);
-	}
-    in.close();
-}
-
-/*
-    // for (int i = 0; i <= 15; i++) {
-    //     *(cpld + ((0xc0 + i) << 1)) = 0xffff;
-    // }
-
-
-        int look = 0;
-        int line = 0;
-		for (auto & i : str) {
-			if (i == '1') {
-				look += 1;
-                look <<= 1;
-			} else if (i == '0') {
-                look <<= 1;
-			} else {
-                // std::cout << look << std::endl;
-				*(cpld + ((0xc0 + line) << 1)) = look;
-                look = 0;
-                line += 1;
-			}
-		}
-
-*/
