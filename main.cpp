@@ -1,10 +1,11 @@
 #include "./lib/include.cpp"
 #include "./lib/badapple.cpp"
-#include "./lib/led.cpp"
+#include "./lib/number.cpp"
 #include <sys/types.h>
 #include <wait.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "./lib/led.cpp"
 
 void handle_request(http_request_s *request)
 {
@@ -12,8 +13,12 @@ void handle_request(http_request_s *request)
     http_response_s *response = http_response_init();
     http_response_status(response, 200);
     http_string_s body = http_request_body(request);
-
-    if (request_target_is(request, "/nfc/init"))  {
+    if (request_target_is(request, "/led")) {
+        jsonxx::json j = jsonxx::json::parse(get_body_string(body));
+        int status = std::stoi(std::string(j["status"])), num = std::stoi(std::string(j["num"])); 
+        led(status, num);
+        set_response_ok(response);
+    } else if (request_target_is(request, "/nfc/init"))  {
         if (nfc != nullptr) delete nfc;
         nfc = new NFC();
         if (nfc->initNFC())  set_response_ok(response);
@@ -53,7 +58,7 @@ void handle_request(http_request_s *request)
         http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, "OK", 2);
     }
-    else if (request_target_is(request, "/led"))  {
+    else if (request_target_is(request, "/number"))  {
         // std::cout<<get_body_string(body)<<std::endl;
         // jsonxx::json j = jsonxx::json::parse(get_body_string(body));
         // for(auto i:j) std::cout<<i<<std::endl;
@@ -62,7 +67,7 @@ void handle_request(http_request_s *request)
         int ret;
         int *thread_ret = NULL;
         int arg = 12345678;
-        ret = pthread_create(&th, NULL, led, (void *)&arg);
+        ret = pthread_create(&th, NULL, number, (void *)&arg);
         http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, "OK", 2);
     }
