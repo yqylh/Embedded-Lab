@@ -59,14 +59,14 @@ void handle_request(http_request_s *request)
         http_response_body(response, "OK", 2);
     }
     else if (request_target_is(request, "/number"))  {
-        // std::cout<<get_body_string(body)<<std::endl;
-        // jsonxx::json j = jsonxx::json::parse(get_body_string(body));
-        // for(auto i:j) std::cout<<i<<std::endl;
-        // std::cout << jsonxx::json_wrap(get_body_string(body));
+        jsonxx::json j = jsonxx::json::parse(get_body_string(body));
+        int num = std::stoi(std::string(j["num"])); 
+
         pthread_t th;
         int ret;
         int *thread_ret = NULL;
-        int arg = 12345678;
+        // int arg = 12345678;
+        int arg = num;
         ret = pthread_create(&th, NULL, number, (void *)&arg);
         http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, "OK", 2);
