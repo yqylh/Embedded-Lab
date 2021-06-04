@@ -1022,6 +1022,7 @@ void hs_bind_localhost(int s, struct sockaddr_in* addr, const char* ipaddr, int 
   addr->sin_port = htons(port);
   int rc = bind(s, (struct sockaddr *)addr, sizeof(struct sockaddr_in));
   if (rc < 0) {
+    // puts("gun a ");
     exit(1);
   }
 }

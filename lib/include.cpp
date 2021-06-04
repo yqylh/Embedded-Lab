@@ -19,14 +19,14 @@
 #include "jsonxx/json.hpp"
 #define HTTPSERVER_IMPL
 #include "http.h"
+#include "nfc.hpp"
 // DEBUG
 #ifdef EBUG
 #include "./lib/test.cpp"
 #endif
 
-int mem_fd;
-unsigned short *cpld;
 struct http_server_s *server;
+NFC* nfc;
 
 int request_target_is(struct http_request_s* request, char const * target) {
     http_string_t url = http_request_target(request);
@@ -42,20 +42,10 @@ void set_response_fail(http_response_s* response){
     http_response_body(response,"fail",4);
 }
 
-void openMem() {
-    mem_fd = open("/dev/mem", O_RDWR);
-    cpld = (unsigned short *)mmap(NULL, (size_t)0x20, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, mem_fd, (off_t)(0x8000000));
-    if (cpld == MAP_FAILED) return;
-}
-void closeMem() {
-    munmap(cpld, 0x20);
-    close(mem_fd);
-}
-
 // 改变Ctrl + C
 void handle_sigint(int signum){
+    puts("我跑卤辣");
     free(server);
-    closeMem();
     exit(0);
 }
 
@@ -69,7 +59,6 @@ std::string get_body_string (http_string_s& body){
 
 void init() {
     signal(SIGINT,handle_sigint);
-    openMem();
 }
 
 #endif
