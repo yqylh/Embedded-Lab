@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include "./lib/led.cpp"
+#include "./lib/servo.cpp"
 
 void handle_request(http_request_s *request)
 {
@@ -13,9 +14,23 @@ void handle_request(http_request_s *request)
     http_response_s *response = http_response_init();
     http_response_status(response, 200);
     http_string_s body = http_request_body(request);
-    if (request_target_is(request, "/led")) {
+    if (request_target_is(request , "/servo/stop")) {
+        servo(1);
+        set_response_ok(response);
+    } else if (request_target_is(request , "/servo/clock")) {
+        servo(3);
+        set_response_ok(response);
+    } else if (request_target_is(request , "/servo/countclock")) {
+        servo(2);
+        set_response_ok(response);
+    } else if (request_target_is(request, "/beep")) {
+        led(1, 4);
+        usleep(100);
+        led(1, 4);
+        set_response_ok(response);
+    } else if (request_target_is(request, "/led")) {
         jsonxx::json j = jsonxx::json::parse(get_body_string(body));
-        int status = std::stoi(std::string(j["status"])), num = std::stoi(std::string(j["num"])); 
+        int status = std::stoi(std::string(j["op"])), num = std::stoi(std::string(j["led"])); 
         led(status, num);
         set_response_ok(response);
     } else if (request_target_is(request, "/nfc/init"))  {
@@ -31,16 +46,22 @@ void handle_request(http_request_s *request)
         } else set_response_fail(response);
     }
     else if (request_target_is(request, "/nfc/label")) {
+        jsonxx::json ret;
+        ret["ID"] = std::string("");
+        http_response_header(response, "Content-Type", "text/plain");
         if (nfc != nullptr) {
             std::string temp = nfc->LabelNFC();
-            http_response_header(response, "Content-Type", "text/plain");
-            http_response_body(response, temp.c_str(), temp.length());
-        } else set_response_fail(response);
+            ret["state"] = "OK";
+            ret["ID"] = temp;
+        } else ret["state"] = "FAILED";
+        std::string jsonStr = ret.dump();
+        http_response_body(response, jsonStr.c_str(), jsonStr.length());
+
     } else if (request_target_is(request, "/nfc/close")) {
         if (nfc != nullptr) delete nfc;
         nfc = nullptr;
         set_response_ok(response);
-    } else if (request_target_is(request, "/badapple")) {
+    } else if (request_target_is(request, "/matrix")) {
         pthread_t th;
         int ret;
         int *thread_ret = NULL;
@@ -58,9 +79,9 @@ void handle_request(http_request_s *request)
         http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, "OK", 2);
     }
-    else if (request_target_is(request, "/number"))  {
+    else if (request_target_is(request, "/tube"))  {
         jsonxx::json j = jsonxx::json::parse(get_body_string(body));
-        int num = std::stoi(std::string(j["num"])); 
+        int num = std::stoi(std::string(j["number"])); 
 
         pthread_t th;
         int ret;

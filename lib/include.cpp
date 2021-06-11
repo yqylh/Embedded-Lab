@@ -40,7 +40,7 @@ void set_response_ok(http_response_s* response){
 }
 void set_response_fail(http_response_s* response){
     http_response_header(response,"Content-Type", "text/plain");
-    http_response_body(response,"fail",4);
+    http_response_body(response,"FAILED",6);
 }
 
 // 改变Ctrl + C
