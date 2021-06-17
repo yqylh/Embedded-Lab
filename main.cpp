@@ -5,8 +5,9 @@
 #include <wait.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "./lib/led.cpp"
+// #include "./lib/led.cpp"
 #include "./lib/servo.cpp"
+#include "./lib/beep.cpp"
 
 void handle_request(http_request_s *request)
 {
@@ -14,6 +15,7 @@ void handle_request(http_request_s *request)
     http_response_s *response = http_response_init();
     http_response_status(response, 200);
     http_string_s body = http_request_body(request);
+    puts("some http");
     if (request_target_is(request , "/servo/stop")) {
         servo(1);
         set_response_ok(response);
@@ -24,13 +26,18 @@ void handle_request(http_request_s *request)
         servo(2);
         set_response_ok(response);
     } else if (request_target_is(request, "/beep")) {
-        led(1, 4);
-        usleep(100);
-        led(1, 4);
+        pthread_t th;
+        int ret;
+        int *thread_ret = NULL;
+        ret = pthread_create(&th, NULL, beep, NULL);
         set_response_ok(response);
     } else if (request_target_is(request, "/led")) {
+        std::cout << get_body_string(body) << std::endl;
         jsonxx::json j = jsonxx::json::parse(get_body_string(body));
-        int status = std::stoi(std::string(j["op"])), num = std::stoi(std::string(j["led"])); 
+        // puts("fuck");
+        int status = std::stoi(std::string(j[std::string("op")]));
+        // puts("fucccccc");
+        int num = std::stoi(std::string(j[std::string("led")])); 
         led(status, num);
         set_response_ok(response);
     } else if (request_target_is(request, "/nfc/init"))  {
@@ -84,11 +91,16 @@ void handle_request(http_request_s *request)
         int num = std::stoi(std::string(j["number"])); 
 
         pthread_t th;
-        int ret;
+        int ret = 0;
+        
+        tubeRet = 1;
+        usleep(100000);
+        tubeRet = 0;
         int *thread_ret = NULL;
         // int arg = 12345678;
         int arg = num;
         ret = pthread_create(&th, NULL, number, (void *)&arg);
+        
         http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, "OK", 2);
     }

@@ -204,8 +204,7 @@ std::string NFC::LabelNFC(){
 	char temp[100];
 	if(readbyte)
 	{
-		for(i=0;i<readbyte;i++)
-			printf("%x-",buf[i]);
+		for(i=0;i<readbyte;i++) printf("%x-",buf[i]);
 		printf("\n");
 		for(i=0;i<readbyte;i++)
 		{
@@ -218,10 +217,10 @@ std::string NFC::LabelNFC(){
 					printf("%x",buf[i+5]);
 
 					sprintf(temp,"UID: ");
-					sprintf(temp,"%x-",buf[i+2]);
-					sprintf(temp,"%x-",buf[i+3]);
-					sprintf(temp,"%x-",buf[i+4]);
-					sprintf(temp,"%x",buf[i+5]);
+					sprintf(temp+5,"%x-",buf[i+2]);
+					sprintf(temp+8,"%x-",buf[i+3]);
+					sprintf(temp+11,"%x-",buf[i+4]);
+					sprintf(temp+14,"%x",buf[i+5]);
 			}
 		}
 		readbyte=0;

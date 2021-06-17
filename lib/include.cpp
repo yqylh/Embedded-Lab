@@ -28,6 +28,8 @@
 
 struct http_server_s *server;
 NFC* nfc;
+int matrixRet = 0;
+int tubeRet = 0;
 
 int request_target_is(struct http_request_s* request, char const * target) {
     http_string_t url = http_request_target(request);
@@ -45,6 +47,9 @@ void set_response_fail(http_response_s* response){
 
 // 改变Ctrl + C
 void handle_sigint(int signum){
+    matrixRet = 1;
+    tubeRet = 1;
+    sleep(2);
     puts("我跑卤辣");
     free(server);
     exit(0);
