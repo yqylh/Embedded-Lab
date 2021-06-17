@@ -53,17 +53,33 @@ void handle_request(http_request_s *request)
         } else set_response_fail(response);
     }
     else if (request_target_is(request, "/nfc/label")) {
+        // backup
+        // jsonxx::json ret;
+        // ret["ID"] = std::string("");
+        // http_response_header(response, "Content-Type", "text/plain");
+        // if (nfc != nullptr) {
+        //     std::string temp = nfc->LabelNFC();
+        //     ret["state"] = "OK";
+        //     ret["ID"] = temp;
+        // } else ret["state"] = "FAILED";
+        // std::string jsonStr = ret.dump();
+        // http_response_body(response, jsonStr.c_str(), jsonStr.length());
+
+        nfc = new NFC();
+        nfc->initNFC();
+        nfc->WakeUpNFC();
+
         jsonxx::json ret;
         ret["ID"] = std::string("");
-        http_response_header(response, "Content-Type", "text/plain");
-        if (nfc != nullptr) {
-            std::string temp = nfc->LabelNFC();
-            ret["state"] = "OK";
-            ret["ID"] = temp;
-        } else ret["state"] = "FAILED";
+        std::string temp = nfc->LabelNFC();
+        ret["state"] = "OK";
+        ret["ID"] = temp;
+        
         std::string jsonStr = ret.dump();
+        http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, jsonStr.c_str(), jsonStr.length());
-
+        delete nfc;
+        nfc = nullptr;
     } else if (request_target_is(request, "/nfc/close")) {
         if (nfc != nullptr) delete nfc;
         nfc = nullptr;
