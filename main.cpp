@@ -122,10 +122,6 @@ void handle_request(http_request_s *request)
 
 int main() {
     init();
-    pthread_t th;
-    int ret;
-    int *thread_ret = NULL;
-    ret = pthread_create(&th, NULL, badapple, NULL);
 
 #ifdef EBUG
     // test();
