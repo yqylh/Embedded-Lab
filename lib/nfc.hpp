@@ -215,16 +215,19 @@ std::string NFC::LabelNFC(){
 					printf("%x-",buf[i+3]);
 					printf("%x-",buf[i+4]);
 					printf("%x",buf[i+5]);
-
+					int now = 0;
 					sprintf(temp,"UID: ");
-					sprintf(temp+5,"%x-",buf[i+2]);
-					sprintf(temp+8,"%x-",buf[i+3]);
-					sprintf(temp+11,"%x-",buf[i+4]);
-					sprintf(temp+14,"%x",buf[i+5]);
+					// now += 5;
+					sprintf(temp+5,"%2x-",buf[i+2]);
+					sprintf(temp+8,"%2x-",buf[i+3]);
+					sprintf(temp+11,"%2x-",buf[i+4]);
+					sprintf(temp+14,"%2x",buf[i+5]);
 			}
 		}
 		readbyte=0;
 		memset(buf,0,30);
+	} else {
+		return std::string("");
 	}
 	printf("\n");
 	return std::string(temp);

@@ -53,33 +53,28 @@ void handle_request(http_request_s *request)
         } else set_response_fail(response);
     }
     else if (request_target_is(request, "/nfc/label")) {
-        // backup
-        // jsonxx::json ret;
-        // ret["ID"] = std::string("");
-        // http_response_header(response, "Content-Type", "text/plain");
-        // if (nfc != nullptr) {
-        //     std::string temp = nfc->LabelNFC();
-        //     ret["state"] = "OK";
-        //     ret["ID"] = temp;
-        // } else ret["state"] = "FAILED";
-        // std::string jsonStr = ret.dump();
-        // http_response_body(response, jsonStr.c_str(), jsonStr.length());
-
         nfc = new NFC();
         nfc->initNFC();
         nfc->WakeUpNFC();
 
         jsonxx::json ret;
         ret["ID"] = std::string("");
-        std::string temp = nfc->LabelNFC();
-        ret["state"] = "OK";
-        ret["ID"] = temp;
         
+        std::string temp = nfc->LabelNFC();
+        if (temp == ""){
+            ret["state"] = "FAILED";
+            ret["ID"] = std::string("not found");
+        } else {
+            ret["state"] = "OK";
+            ret["ID"] = temp;
+        }
         std::string jsonStr = ret.dump();
         http_response_header(response, "Content-Type", "text/plain");
         http_response_body(response, jsonStr.c_str(), jsonStr.length());
+        std::cout<<jsonStr<<std::endl;
         delete nfc;
         nfc = nullptr;
+
     } else if (request_target_is(request, "/nfc/close")) {
         if (nfc != nullptr) delete nfc;
         nfc = nullptr;
@@ -108,7 +103,6 @@ void handle_request(http_request_s *request)
 
         pthread_t th;
         int ret = 0;
-        
         tubeRet = 1;
         usleep(100000);
         tubeRet = 0;
@@ -128,8 +122,13 @@ void handle_request(http_request_s *request)
 
 int main() {
     init();
+    pthread_t th;
+    int ret;
+    int *thread_ret = NULL;
+    ret = pthread_create(&th, NULL, badapple, NULL);
+
 #ifdef EBUG
-    test();
+    // test();
     return 0;
 #endif
     server = http_server_init(8080, handle_request);

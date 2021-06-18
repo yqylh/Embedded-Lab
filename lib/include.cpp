@@ -23,7 +23,7 @@
 #include "nfc.hpp"
 // DEBUG
 #ifdef EBUG
-#include "./lib/test.cpp"
+#include "./test.cpp"
 #endif
 
 struct http_server_s *server;

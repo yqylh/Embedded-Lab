@@ -5,6 +5,7 @@
 void *number(void *arg) {
     // 80 40 20 10 08 04 02 01
     int num = *(int*)arg;
+    if (num < 0) num = -num;
 	int mem_fd = open("/dev/mem", O_RDWR);
 	unsigned char* cpld = (unsigned char*)mmap(NULL,(size_t)0x10,PROT_READ | PROT_WRITE | PROT_EXEC,MAP_SHARED,mem_fd,(off_t)(0x8000000));
     unsigned char tube[] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x7f,0xff};
